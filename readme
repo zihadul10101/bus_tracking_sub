@@ -1,0 +1,414 @@
+I. Project Overview
+
+"Our Blue Bus" is a university bus tracking application built with React Native for the mobile front-end and Python/Flask with a MongoDB database for the backend. It provides real-time bus location tracking, schedule information, and community features for students, drivers, and administrators. The application utilizes JWT for authentication and role-based authorization.
+
+II. Roles and Responsibilities
+
+Student:
+
+Responsibilities:
+Register and log in to the application.
+View bus routes and schedules.
+Track bus locations in real-time (after the trial period or with an active subscription).
+Post and view blood requests.
+Post and view housing information.
+Post and view tutoring information.
+Manage their profile and subscription.
+View academic notices.
+Manage emergency contacts.
+API Workflow:
+/register (POST): Creates a new student account.
+/verify_otp (POST): Verifies the OTP sent to their mobile.
+/login (POST): Logs in the student and receives a JWT.
+/locations (GET): Retrieves the locations of all buses (requires JWT).
+/blood_requests (POST): Creates a blood request (requires JWT).
+/blood_requests/me (GET): Retrieves their own blood requests (requires JWT).
+/blood_requests (GET): Retrieves all blood requests (requires JWT).
+/housing_posts (POST): Creates a housing post (requires JWT).
+/housing_posts/me (GET): Retrieves their own housing posts (requires JWT).
+/housing_posts (GET): Retrieves all housing posts (requires JWT).
+/tutoring_posts (POST): Creates a tutoring post (requires JWT).
+/tutoring_posts/me (GET): Retrieves their own tutoring posts (requires JWT).
+/tutoring_posts (GET): Retrieves all tutoring posts (requires JWT).
+/notices (GET): Retrieves a list of academic notices (requires JWT, pagination supported).
+/student/emergency_contacts (PUT): Updates their emergency contacts (requires JWT).
+/student/emergency_contacts (GET): Retrieves their emergency contacts (requires JWT).
+Driver:
+
+Responsibilities:
+Register and log in to the application.
+Post their current location.
+View assigned bus and schedule.
+View academic notices
+API Workflow:
+/register (POST): Creates a new driver account (requires admin approval).
+/verify_otp (POST): Verifies the OTP sent to their mobile.
+/login (POST): Logs in the driver and receives a JWT.
+/driver/location (POST): Posts their current location (requires JWT).
+/locations (GET): Retrieves the locations of all buses (requires JWT).
+/notices (GET): Retrieves a list of academic notices (requires JWT, pagination supported).
+Administrator:
+
+Responsibilities:
+Manage users (approve/reject driver accounts, activate/deactivate student accounts).
+Manage buses (CRUD operations).
+Manage schedules (CRUD operations).
+Assign drivers to buses.
+View all blood requests, housing posts, and tutoring posts.
+View student subscriptions.
+Manage academic notices (CRUD operations).
+API Workflow:
+/register (POST): Can create admin accounts.
+/login (POST): Logs in the administrator and receives a JWT.
+/admin_only (GET): Example admin-only route.
+/buses (POST): Creates a new bus (requires JWT).
+/buses/<bus_id> (GET): Retrieves a bus by ID (requires JWT).
+/buses/<bus_id> (PUT): Updates a bus (requires JWT).
+/buses/<bus_id> (DELETE): Deletes a bus (requires JWT).
+/schedules (POST): Creates a new schedule (requires JWT).
+/schedules/<schedule_id> (GET): Retrieves a schedule by ID (requires JWT).
+/schedules/<schedule_id> (PUT): Updates a schedule (requires JWT).
+/schedules/<schedule_id> (DELETE): Deletes a schedule (requires JWT).
+/drivers/<driver_id>/assign (PUT): Assigns a driver to a bus (requires JWT).
+/students (GET): Lists all students (requires JWT).
+/students/<student_id> (GET): Retrieves a student by ID (requires JWT).
+/students/<student_id>/activate (PUT): Activates a student account (requires JWT).
+/students/<student_id>/deactivate (PUT): Deactivates a student account (requires JWT).
+/students/<student_id>/subscription (GET): Retrieves a student's subscription status (requires JWT).
+/admin/blood_requests (GET): Retrieves all blood requests (requires JWT).
+/admin/housing_posts (GET): Retrieves all housing posts (requires JWT).
+/admin/tutoring_posts (GET): Retrieves all tutoring posts (requires JWT).
+/admin/notices (POST): Creates a new academic notice (requires JWT).
+/notices (GET): Retrieves a list of academic notices (requires JWT, pagination supported).
+/admin/notices/<notice_id> (GET): Retrieves a specific academic notice (requires JWT).
+/admin/notices/<notice_id> (PUT): Updates an academic notice (requires JWT).
+/admin/notices/<notice_id> (DELETE): Deletes an academic notice (requires JWT).
+/locations (GET): Retrieves the locations of all buses (requires JWT).
+III. API Authentication and Authorization
+
+Authentication: JWT (JSON Web Tokens) are used for authentication. When a user logs in successfully, the server generates a JWT containing the user's email and role. This token is sent to the client, which stores it (e.g., in AsyncStorage for React Native).
+Authorization: Role-based access control is implemented using the @token_required decorator in Flask. This decorator verifies the JWT and checks if the user has the required role(s) to access a particular endpoint.
+IV. Database Schema (MongoDB)
+
+users: Stores user information (name, email, mobile, password, role, OTP, verification status, etc.). Includes student_info (department, subscription status, emergency contacts) and driver_info (NID, approval status).
+buses: Stores bus information (bus number, route, capacity).
+schedules: Stores schedule information (bus ID, route, departure time, arrival time, days of the week).
+live_locations: Stores real-time location data for buses (driver ID, bus ID, latitude, longitude, timestamp).
+blood_requests: Stores blood request information (user ID, blood type, quantity, hospital, contact details, description, status).
+housing_posts: Stores housing post information (user ID, title, description, address, rent, bedrooms, bathrooms, amenities, contact details).
+tutoring_posts: Stores tutoring post information (user ID, title, subject, description, hourly rate, availability, contact details).
+academic_notices: Stores academic notices (admin ID, title, content, creation and update timestamps).
+V. Mobile App (React Native)
+
+Navigation: Uses a Drawer Navigator and Role-based Navigator to provide different menu options and screen access based on the user's role.
+AuthContext: Manages authentication state (JWT token) and provides login/logout functions.
+ProtectedRoute/AuthGuard: Protects routes that require authentication and authorization.
+UI Components: Provides a mobile-friendly user interface for all roles.
+VI. Key Features
+
+Real-time Bus Tracking: Allows students and admins to track bus locations in real-time.
+Role-Based Access Control: Restricts access to certain features and API endpoints based on user roles.
+Community Features: Enables students to post and view blood requests, housing information, and tutoring services.
+Driver Management: Allows admins to manage driver accounts and assign them to buses.
+Schedule Management: Enables admins to create and manage bus schedules.
+Academic Notices: Allows admins to post important announcements to the app.
+Emergency Contacts: Allows students to manage their emergency contact information.
+
+
+
+I. Users:
+
+Valid Student Registration Data:
+
+Json
+
+Apply
+{
+  "name": "Alice Smith",
+  "email": "alice.smith@example.com",
+  "mobile": "1234567890",
+  "password": "securePassword",
+  "role": "student",
+  "department": "Computer Science"
+}
+Valid Driver Registration Data:
+
+Json
+
+Apply
+{
+  "name": "Bob Johnson",
+  "email": "bob.johnson@example.com",
+  "mobile": "9876543210",
+  "password": "driverPassword",
+  "role": "driver",
+  "nid": "12345678901234567890"
+}
+Valid Admin Registration Data:
+
+Json
+
+Apply
+{
+  "name": "Admin User",
+  "email": "admin@example.com",
+  "mobile": "5551234567",
+  "password": "adminPassword",
+  "role": "admin"
+}
+Invalid Registration Data (Missing Fields):
+
+Json
+
+Apply
+{
+  "email": "invalid@example.com",
+  "password": "short"
+}
+Valid Login Data:
+
+Json
+
+Apply
+{
+  "email": "alice.smith@example.com",
+  "password": "securePassword"
+}
+Invalid Login Data (Incorrect Password):
+
+Json
+
+Apply
+{
+  "email": "alice.smith@example.com",
+  "password": "wrongPassword"
+}
+Example JWT Payloads:
+
+Student:
+
+Json
+
+Apply
+{
+  "email": "alice.smith@example.com",
+  "role": "student",
+  "exp": 1678886400  # Example expiry timestamp
+}
+Driver:
+
+Json
+
+Apply
+{
+  "email": "bob.johnson@example.com",
+  "role": "driver",
+  "exp": 1678886400
+}
+Admin:
+
+Json
+
+Apply
+{
+  "email": "admin@example.com",
+  "role": "admin",
+  "exp": 1678886400
+}
+II. Buses:
+
+Valid Bus Creation Data:
+
+Json
+
+Apply
+{
+  "bus_number": "UNI-001",
+  "route": "Campus - City Center",
+  "capacity": 40
+}
+Invalid Bus Creation Data (Missing Fields):
+
+Json
+
+Apply
+{
+  "route": "Campus - Suburb",
+  "capacity": 30
+}
+III. Schedules:
+
+Valid Schedule Creation Data:
+
+Json
+
+Apply
+{
+  "bus_id": "<VALID_BUS_ID>",
+  "route": "Campus - Library",
+  "departure_time": "08:00",
+  "arrival_time": "08:30",
+  "days_of_week": ["Mon", "Wed", "Fri"]
+}
+Invalid Schedule Creation Data (Invalid bus_id):
+
+Json
+
+Apply
+{
+  "bus_id": "invalid_bus_id",
+  "route": "Campus - Dorms",
+  "departure_time": "17:00",
+  "arrival_time": "17:15",
+  "days_of_week": ["Tue", "Thu"]
+}
+IV. Live Locations:
+
+Valid Driver Location Post Data:
+
+Json
+
+Apply
+{
+  "busId": "<VALID_BUS_ID>",
+  "latitude": 23.777176,
+  "longitude": 90.399452
+}
+Invalid Driver Location Post Data (Missing Fields):
+
+Json
+
+Apply
+{
+  "latitude": 23.77
+}
+V. Academic Notices:
+
+Valid Notice Creation Data:
+
+Json
+
+Apply
+{
+  "title": "Holiday Announcement",
+  "content": "University will be closed on December 25th."
+}
+Invalid Notice Creation Data (Missing Fields):
+
+Json
+
+Apply
+{
+  "title": "Important"
+}
+VI. Emergency Contacts (Student Profile):
+
+Valid Emergency Contact Data:
+
+Json
+
+Apply
+{
+  "emergency_contacts": [
+    {
+      "name": "Jane Doe",
+      "relationship": "Mother",
+      "phone": "111-222-3333"
+    },
+    {
+      "name": "John Doe",
+      "relationship": "Father",
+      "phone": "444-555-6666"
+    }
+  ]
+}
+Invalid Emergency Contact Data (Missing Fields):
+
+Json
+
+Apply
+{
+  "emergency_contacts": [
+    {
+      "name": "Invalid Contact",
+      "relationship": "Friend"
+    }
+  ]
+}
+VII. Blood Requests:
+
+Valid Blood Request Data:
+
+Json
+
+Apply
+{
+  "bloodType": "O+",
+  "quantity": "2 bags",
+  "hospital": "General Hospital",
+  "contactName": "Emergency Contact",
+  "contactPhone": "777-888-9999",
+  "description": "Urgent need for O+ blood"
+}
+Invalid Blood Request Data (Missing Fields):
+
+Json
+
+Apply
+{
+  "bloodType": "A-"
+}
+VIII. Housing Posts:
+
+Valid Housing Post Data:
+
+Json
+
+Apply
+{
+  "title": "Room Available",
+  "description": "Furnished room near campus",
+  "address": "123 University Ave",
+  "rent": 600,
+  "bedrooms": 1,
+  "bathrooms": 1,
+  "contactName": "Landlord",
+  "contactPhone": "123-456-7890"
+}
+Invalid Housing Post Data (Missing Fields):
+
+Json
+
+Apply
+{
+  "title": "Apartment for Rent"
+}
+IX. Tutoring Posts:
+
+Valid Tutoring Post Data:
+
+Json
+
+Apply
+{
+  "title": "Math Tutor",
+  "subject": "Calculus",
+  "description": "Experienced calculus tutor",
+  "hourlyRate": 30,
+  "availability": "Evenings",
+  "contactName": "Tutor Name",
+  "contactPhone": "987-654-3210"
+}
+Invalid Tutoring Post Data (Missing Fields):
+
+Json
+
+Apply
+{
+  "title": "English Tutor"
+}
+Important Notes:
+
+Replace <VALID_BUS_ID> with the actual _id of a bus in your database.
+To test authentication, you'll need to register users and use the returned JWTs in the Authorization header of subsequent requests.
+Remember to check for proper error messages and status codes for invalid data.

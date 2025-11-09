@@ -1,0 +1,45 @@
+# SECRET FILES - NEVER UPLOAD!
+.env
+.env.local
+.env.production
+
+# API KEYS & PASSWORDS
+*.key
+*.pem
+*.crt
+
+# LOCAL DATABASE
+*.db
+*.sqlite3
+
+# PYTHON CACHE
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# NODE / REACT NATIVE
+node_modules/
+
+.expo/
+.expo-shared/
+
+# LOGS
+*.log
+npm-debug.log*
+yarn-debug.log*
+
+# OS FILES
+.DS_Store
+Thumbs.db
+
+# EDITOR FILES
+.vscode/
+.idea/
+*.sublime-*
+
+# BUILD FILES
+dist/
+build/
+.apk
+.aab
