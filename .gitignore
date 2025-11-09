@@ -7,6 +7,10 @@
 *.key
 *.pem
 *.crt
+# FIREBASE SECRETS
+firebase-service-account.json
+*.json
+serviceAccountKey.json
 
 # LOCAL DATABASE
 *.db

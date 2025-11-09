@@ -1,16 +1,15 @@
-# utils/email.py
 import resend
 from config import RESEND_API_KEY, APP_NAME
 
 # Set API key
-resend.api_key = RESEND_API_KEY
+resend.api_key ="9f8e6d5c4b3a291807f6e5d4c3b2a1908f7e6d5c4b3a291807f6e5d4c3b2a190"
 
 print("RESEND v0.8.0 CONNECTED — EMAILS READY!")
 
 def send_email(to_email, subject, html_body):
     try:
         resend.emails.send({
-            "from": f"{APP_NAME} <no-reply@resend.dev>",
+            "from": f"sub_bus <no-reply@resend.dev>",
             "to": to_email,
             "subject": subject,
             "html": html_body
